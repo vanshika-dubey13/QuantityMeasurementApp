@@ -11,9 +11,13 @@
 # ✅ Implemented Features
 
 > Features will be added here as Use Cases are implemented.
-- UC1 – Feet Equality
+- 🧩 UC1 – Feet Equality
 > - Implements value-based equality for feet measurements using an overridden equals() method.
 > - Establishes object equality semantics as the foundation for future unit comparisons.
+
+- 🧩 UC2 – Inches Equality :
+> - Extends value-based equality comparison to inches measurements using a dedicated Inches class.
+> - Maintains independent unit validation while reinforcing equality behaviour across measurement types.
 
 # 🧰 Tech Stack
 
