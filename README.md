@@ -15,12 +15,8 @@
 > - Implements value-based equality for feet measurements using an overridden equals() method.
 > - Establishes object equality semantics as the foundation for future unit comparisons.
 
-- 🧩 UC2 – Inches Equality :
-> - Extends value-based equality comparison to inches measurements using a dedicated Inches class.
-> - Maintains independent unit validation while reinforcing equality behaviour across measurement types.
 
 # 🧰 Tech Stack
-
 > Java 17+ — core language and application development
 > Maven — build automation and dependency management
 > JUnit 5 — unit testing framework supporting TDD workflow
