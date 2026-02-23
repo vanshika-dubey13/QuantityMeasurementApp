@@ -19,6 +19,10 @@
 > - Extends value-based equality comparison to inches measurements using a dedicated Inches class.
 > - Maintains independent unit validation while reinforcing equality behaviour across measurement types.
 
+- 🧩 UC3 – Generic Length :
+> - Refactors unit-specific classes into a unified Length abstraction using a LengthUnit enum.
+> - Eliminates duplicated logic by applying the DRY principle while enabling cross-unit equality comparison.
+
 # 🧰 Tech Stack
 
 > Java 17+ — core language and application development
