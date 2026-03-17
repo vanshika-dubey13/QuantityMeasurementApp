@@ -63,6 +63,39 @@
 > - Refactors addition, subtraction, and division to use a centralized arithmetic helper, eliminating duplicated validation and conversion logic.
 > - Improves maintainability and scalability while preserving all existing behaviour and public APIs.
 
+- 🧩 UC14 – Temperature Measurement (Selective Arithmetic Support) :
+> - Introduces temperature measurements using TemperatureUnit integrated into the generic Quantity<U> architecture.
+> - Supports equality comparison and unit conversion across Celsius, Fahrenheit, and Kelvin using non-linear conversion formulas.
+> - Refactors IMeasurable with default capability validation to allow category-specific operation support.
+> - Prevents unsupported arithmetic operations (addition, subtraction, division) through explicit validation and meaningful exceptions.
+> - Demonstrates Interface Segregation and capability-based design while preserving backward compatibility for length, weight, and volume.
+
+- 🧩 UC15 – N-Tier Architecture Refactoring :
+> - Refactors the Quantity Measurement Application from a monolithic design into a structured N-Tier architecture.
+> - Introduces layered separation including Controller, Service, Repository, Model, Entity, DTO, Interfaces, and Units packages.
+> - Moves business logic into the Service layer, while the Controller layer manages application interaction and orchestration.
+> - Adds a Repository layer with a cache-based storage implementation to record measurement operations.
+> - Standardizes data flow using QuantityDTO for external transfer, QuantityModel for internal processing, and QuantityMeasurementEntity for persistence.
+> - Improves modularity, testability, maintainability, and extensibility, preparing the system for future integration with REST APIs or database storage.
+
+- 🧩 UC16 – Database Integration with JDBC for Quantity Measurement Persistence :
+> - Extends the N-Tier architecture established in UC15 with persistent relational database storage using JDBC (Java Database Connectivity).
+> - Introduces QuantityMeasurementDatabaseRepository as a full JDBC-based replacement for the in-memory QuantityMeasurementCacheRepository, enabling long-term data persistence across application restarts.
+> - Adds ApplicationConfig utility class that loads all database configuration from application.properties, supporting environment-specific settings for development, testing, and production.
+> - Introduces ConnectionPool utility class that manages a pool of reusable JDBC connections for efficient resource usage, eliminating the overhead of opening and closing connections on every operation.
+> - Extends IQuantityMeasurementRepository interface with four new methods: getMeasurementsByOperation(), getMeasurementsByType(), getTotalCount(), and deleteAll() — enabling filtering, reporting, and test isolation.
+> - Adds DatabaseException to the custom exception hierarchy, with static factory methods (connectionFailed, queryFailed, transactionFailed) for structured, meaningful database error handling.
+> - Adopts parameterized SQL queries (PreparedStatement) throughout the database repository to prevent SQL injection attacks.
+> - Migrates all System.out.println logging to Java's built-in java.util.logging (JUL) framework via SLF4J and Logback for structured, configurable output across all layers.
+> - Reorganizes packages from com.apps.quantitymeasurement.* to com.app.quantitymeasurement.* with clear layer-based sub-packages: controller, service, repository, entity, exception, unit, and util.
+> - Uses H2 embedded database by default (zero external setup required) with the ability to switch to MySQL or PostgreSQL by updating application.properties and uncommenting the relevant pom.xml dependency.
+> - Adds schema.sql under src/main/resources/db/ defining the quantity_measurement_entity table and an audit quantity_measurement_history table with proper indexes for query performance.
+> - Repository type is fully configurable at runtime via the repository.type property (database or cache) — no code changes needed to switch persistence strategies.
+> - Adds integration tests (QuantityMeasurementIntegrationTest) and unit tests for each layer — repository, service, and controller — using H2 in-memory database for fast, isolated test execution.
+> - Implements closeResources() and deleteAllMeasurements() methods on QuantityMeasurementApp for graceful shutdown and test state management.
+> - Demonstrates enterprise-level practices including connection pooling, transaction awareness, resource cleanup with try-finally, separation of configuration from code, and environment-specific database profiles.
+
+
 # 🧰 Tech Stack
 
 > Java 17+ — core language and application development
