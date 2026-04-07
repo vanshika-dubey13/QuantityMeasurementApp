@@ -1,0 +1,40 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: 
+              - "http://localhost:5173"
+              - "http://localhost:3000"
+              - "http://127.0.0.1:5173"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+      routes:
+        # Route 1: User Registration & Login (Goes to Port 8081)
+        - id: user-service-route
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/auth/**
+
+        # Route 2: Core Conversions & Arithmetic (Goes to Port 8082)
+        - id: measurement-service-route
+          uri: lb://MEASUREMENT-SERVICE
+          predicates:
+            - Path=/api/v1/quantities/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

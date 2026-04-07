@@ -1,152 +1,263 @@
-# QuantityMeasurementApp
+# UC17: Spring Boot REST API with JPA Persistence for Quantity Measurement  
+### Controller, Service, Repository, Entity and API Documentation Integration
 
-> A Java application developed using Test-Driven Development (TDD) to progressively design and refine a quantity measurement system. The project emphasizes incremental development, clean object-oriented design, and continuous refactoring to build a flexible and maintainable domain model over time.
+---
 
-# 📖 Overview
+## Description
 
-- Modular Java project focused on modelling quantity measurements.
-- Organized around incremental Use Cases to evolve the domain design.
-- Emphasizes clarity, consistency, and maintainable structure as the system grows.
+UC17 enhances the **Quantity Measurement Application** by transforming it into a **full-fledged Spring Boot REST API** with **JPA-based database persistence**.
 
-# ✅ Implemented Features
+Building upon the layered architecture introduced in UC15 and database integration from UC16, this use case replaces manual JDBC handling with **Spring Data JPA**, enabling automatic database operations and cleaner code.
 
-> Features will be added here as Use Cases are implemented.
-- 🧩 UC1 – Feet Equality
-> - Implements value-based equality for feet measurements using an overridden equals() method.
-> - Establishes object equality semantics as the foundation for future unit comparisons.
+The application now exposes all quantity measurement operations (compare, convert, add, subtract, divide) as **RESTful APIs**, allowing clients such as **Swagger UI, Postman, or frontend applications** to interact with the system over HTTP.
 
-- 🧩 UC2 – Inches Equality :
-> - Extends value-based equality comparison to inches measurements using a dedicated Inches class.
-> - Maintains independent unit validation while reinforcing equality behaviour across measurement types.
+UC17 also introduces **OpenAPI (Swagger) documentation**, enabling interactive API testing and improving developer experience.
 
-- 🧩 UC3 – Generic Length :
-> - Refactors unit-specific classes into a unified Length abstraction using a LengthUnit enum.
-> - Eliminates duplicated logic by applying the DRY principle while enabling cross-unit equality comparison.
+The system now supports **persistent storage, API-based access, validation, exception handling, and structured response handling**, making it closer to a real-world enterprise backend service.
 
-- 🧩 UC4 – Extended Unit Support :
-> - Adds Yards and Centimeters to the LengthUnit enum with appropriate conversion factors.
-> - Demonstrates scalability of the generic design by enabling seamless cross-unit equality without introducing new classes.
+---
 
-- 🧩 UC5 – Unit-to-Unit Conversion :
-> - Introduces explicit conversion operations between supported length units using centralized enum conversion factors.
-> - Extends the Length API to convert measurements across units while preserving mathematical equivalence and precision.
+## Limitations in UC16
 
-- 🧩 UC6 – Length Addition Operation :
-> - Introduces addition between length measurements with automatic unit normalization and conversion.
-> - Returns a new immutable Length result expressed in the unit of the first operand while preserving mathematical accuracy.
+Before UC17:
 
-- 🧩 UC7 – Addition with Target Unit Specification :
-> - Extends length addition to allow explicit specification of the result unit independent of operand units.
-> - Enhances API flexibility by enabling arithmetic results to be expressed in any supported unit while preserving immutability and precision.
+1. Application used **JDBC with manual SQL queries**, increasing boilerplate code.
+2. No **REST API exposure**, limiting usage to internal or console-based execution.
+3. No **automatic API documentation** for developers.
+4. No **standard HTTP response handling (status codes, JSON responses)**.
+5. Validation and error handling were not fully aligned with web standards.
+6. Tight coupling existed between layers due to manual database handling.
+7. No support for **modern backend communication (REST over HTTP)**.
 
-- 🧩 UC8 – Standalone Unit Refactor :
-> - Extracts LengthUnit into a standalone enum responsible for all unit conversion logic.
-> - Improves architectural separation by delegating conversions to units, reducing coupling and enabling scalable support for future measurement categories.
+---
 
-- 🧩 UC9 – Weight Measurement Support :
-> - Introduces a weight measurement category with Weight and WeightUnit supporting kilograms, grams, and pounds.
-> - Enables equality, conversion, and addition operations for weight while preserving strict separation from length measurements and stabilizing the shared measurement architecture.
+## Goals of UC17
 
-- 🧩 UC10 – Generic Quantity Architecture :
-> - Introduces a generic Quantity<U extends IMeasurable> model enabling multiple measurement categories through a shared abstraction.
-> - Eliminates category-specific duplication by unifying equality, conversion, and addition logic into a single scalable architecture.
+- Introduce **Spring Boot REST APIs**
+- Replace JDBC with **Spring Data JPA**
+- Enable **automatic database operations (CRUD)**
+- Provide **OpenAPI (Swagger) documentation**
+- Implement **global exception handling**
+- Support **input validation using annotations**
+- Enable **JSON-based request and response handling**
+- Improve **code maintainability and scalability**
+- Provide **API endpoints for external clients**
 
-- 🧩 UC11 – Volume Measurement Support :
-> - Adds a new measurement category using VolumeUnit (Litre, Millilitre, Gallon) implemented through the generic Quantity<U> architecture.
-> - Validates that new measurement types integrate without modifying existing quantity logic, proving true multi-category scalability.
+---
 
-- 🧩 UC12 – Subtraction and Division Operations :
-> - Introduces subtraction between quantities with automatic cross-unit normalization while preserving immutability.
-> - Adds division support producing a dimensionless ratio, enabling comparative analysis across measurements of the same category.
+## Layered Architecture
 
-- 🧩 UC13 – Centralized Arithmetic Logic (DRY Refactor) :
-> - Refactors addition, subtraction, and division to use a centralized arithmetic helper, eliminating duplicated validation and conversion logic.
-> - Improves maintainability and scalability while preserving all existing behaviour and public APIs.
+System Flow:
 
-- 🧩 UC14 – Temperature Measurement (Selective Arithmetic Support) :
-> - Introduces temperature measurements using TemperatureUnit integrated into the generic Quantity<U> architecture.
-> - Supports equality comparison and unit conversion across Celsius, Fahrenheit, and Kelvin using non-linear conversion formulas.
-> - Refactors IMeasurable with default capability validation to allow category-specific operation support.
-> - Prevents unsupported arithmetic operations (addition, subtraction, division) through explicit validation and meaningful exceptions.
-> - Demonstrates Interface Segregation and capability-based design while preserving backward compatibility for length, weight, and volume.
+Client (Swagger / Postman)  
+      ↓  
+Controller Layer (REST APIs)  
+      ↓  
+DTO Layer (Request / Response Objects)  
+      ↓  
+Service Layer (Business Logic)  
+      ↓  
+Domain Logic (Quantity Engine)  
+      ↓  
+Entity Layer (JPA Entity Mapping)  
+      ↓  
+Repository Layer (Spring Data JPA)  
+      ↓  
+Database (MySQL / H2)
 
-- 🧩 UC15 – N-Tier Architecture Refactoring :
-> - Refactors the Quantity Measurement Application from a monolithic design into a structured N-Tier architecture.
-> - Introduces layered separation including Controller, Service, Repository, Model, Entity, DTO, Interfaces, and Units packages.
-> - Moves business logic into the Service layer, while the Controller layer manages application interaction and orchestration.
-> - Adds a Repository layer with a cache-based storage implementation to record measurement operations.
-> - Standardizes data flow using QuantityDTO for external transfer, QuantityModel for internal processing, and QuantityMeasurementEntity for persistence.
-> - Improves modularity, testability, maintainability, and extensibility, preparing the system for future integration with REST APIs or database storage.
+Each layer maintains a **clear separation of concerns**, ensuring modular and scalable architecture.
 
-- 🧩 UC16 – Database Integration with JDBC for Quantity Measurement Persistence :
-> - Extends the N-Tier architecture established in UC15 with persistent relational database storage using JDBC (Java Database Connectivity).
-> - Introduces QuantityMeasurementDatabaseRepository as a full JDBC-based replacement for the in-memory QuantityMeasurementCacheRepository, enabling long-term data persistence across application restarts.
-> - Adds ApplicationConfig utility class that loads all database configuration from application.properties, supporting environment-specific settings for development, testing, and production.
-> - Introduces ConnectionPool utility class that manages a pool of reusable JDBC connections for efficient resource usage, eliminating the overhead of opening and closing connections on every operation.
-> - Extends IQuantityMeasurementRepository interface with four new methods: getMeasurementsByOperation(), getMeasurementsByType(), getTotalCount(), and deleteAll() — enabling filtering, reporting, and test isolation.
-> - Adds DatabaseException to the custom exception hierarchy, with static factory methods (connectionFailed, queryFailed, transactionFailed) for structured, meaningful database error handling.
-> - Adopts parameterized SQL queries (PreparedStatement) throughout the database repository to prevent SQL injection attacks.
-> - Migrates all System.out.println logging to Java's built-in java.util.logging (JUL) framework via SLF4J and Logback for structured, configurable output across all layers.
-> - Reorganizes packages from com.apps.quantitymeasurement.* to com.app.quantitymeasurement.* with clear layer-based sub-packages: controller, service, repository, entity, exception, unit, and util.
-> - Uses H2 embedded database by default (zero external setup required) with the ability to switch to MySQL or PostgreSQL by updating application.properties and uncommenting the relevant pom.xml dependency.
-> - Adds schema.sql under src/main/resources/db/ defining the quantity_measurement_entity table and an audit quantity_measurement_history table with proper indexes for query performance.
-> - Repository type is fully configurable at runtime via the repository.type property (database or cache) — no code changes needed to switch persistence strategies.
-> - Adds integration tests (QuantityMeasurementIntegrationTest) and unit tests for each layer — repository, service, and controller — using H2 in-memory database for fast, isolated test execution.
-> - Implements closeResources() and deleteAllMeasurements() methods on QuantityMeasurementApp for graceful shutdown and test state management.
-> - Demonstrates enterprise-level practices including connection pooling, transaction awareness, resource cleanup with try-finally, separation of configuration from code, and environment-specific database profiles.
+---
 
+## REST Controller
 
-# 🧰 Tech Stack
+UC17 introduces a **REST Controller**:
 
-> Java 17+ — core language and application development
-> Maven — build automation and dependency management
-> JUnit 5 — unit testing framework supporting TDD workflow
+QuantityMeasurementController
 
-# ▶️ Build / Run
+Responsibilities include:
 
->  Build the project:
-> - mvn clean install
+- Handling HTTP requests (GET, POST)  
+- Validating input using annotations (`@Valid`)  
+- Delegating operations to the Service Layer  
+- Returning structured JSON responses  
 
-> Run tests:
-> - mvn test
+Available APIs:
 
-# 📂 Project Structure
+- POST `/compare` → Compare two quantities  
+- POST `/convert` → Convert units  
+- POST `/add` → Add quantities  
+- POST `/subtract` → Subtract quantities  
+- POST `/divide` → Divide quantities  
+- GET `/history/type/{type}` → Fetch operation history  
+- GET `/count/{operation}` → Get operation count  
 
-```
-  📦 QuantityMeasurementApp
-  │
-  ├── 📁 src
-  │   ├── 📁 main
-  │   │   └── 📁 java
-  │   │       └── 📁 com
-  │   │           └── 📁 apps
-  │   │               └── 📁 quantitymeasurement
-  │   │                   └── 📄 QuantityMeasurementApp.java
-  │   │
-  │   └── 📁 test
-  │       └── 📁 java
-  │           └── 📁 com
-  │               └── 📁 apps
-  │                   └── 📁 quantitymeasurement
-  │                       └── 📄 QuantityMeasurementAppTest.java
-  │
-  ├── ⚙️ pom.xml
-  ├── 🚫 .gitignore
-  ├── 📜 LICENSE
-  └── 📘 README.md
-```
+---
 
-# ⚙️ Development Approach
+## Service Layer
 
-> This project follows an incremental Test-Driven Development (TDD) workflow:
+The **Service Layer** contains the core business logic:
 
-> - Tests are written first to define expected behaviour.
-> - Implementation code is developed to satisfy the tests.
-> - Each Use Case introduces new functionality in small, controlled steps.
-> - Existing behaviour is preserved through continuous refactoring.
-> - Design evolves toward clean, maintainable, and well-tested software.
+QuantityMeasurementServiceImpl
 
-# 👨‍💻 Author
+Responsibilities:
 
-- Vanshika Dubey
-- Java developer focused on clean design, object-oriented programming, and incremental software Test-Driven Development.
+- Convert input DTOs into domain objects  
+- Perform measurement operations using Quantity engine  
+- Handle unit conversion and validation  
+- Save operation history to database  
+- Return structured response DTOs  
+
+Helper methods:
+
+- `createQuantity()` → Converts input to domain object  
+- `resolveUnit()` → Identifies correct unit type  
+
+---
+
+## Repository Layer
+
+UC17 uses **Spring Data JPA Repository**:
+
+IQuantityMeasurementRepository
+
+Responsibilities:
+
+- Perform CRUD operations automatically  
+- Execute derived query methods  
+
+Key methods:
+
+- `save()` → Store operation result  
+- `findByOperation()` → Fetch history by type  
+- `countByOperationAndErrorFalse()` → Count successful operations  
+
+Spring automatically generates implementations, reducing boilerplate code.
+
+---
+
+## Entity Layer
+
+UC17 introduces a **JPA Entity**:
+
+QuantityMeasurementEntity
+
+Represents database table:
+
+quantity_measurements
+
+Fields include:
+
+- id (Primary Key)  
+- operand1  
+- operand2  
+- operation (Enum)  
+- result  
+- error (boolean flag)  
+
+This enables structured and persistent storage of all operations.
+
+---
+
+## DTO Layer
+
+UC17 separates internal logic from external communication using DTOs:
+
+1. QuantityInputDTO (Request DTO)  
+   - Contains input values, units, target unit, and operation type  
+
+2. QuantityMeasurementDTO (Response DTO)  
+   - Contains result, unit, operation, and message  
+
+3. QuantityDTO (Internal DTO)  
+   - Used within service layer for computation  
+
+This ensures **clean data transfer and loose coupling between layers**.
+
+---
+
+## Exception Handling
+
+UC17 introduces **Global Exception Handling**:
+
+GlobalExceptionHandler
+
+Responsibilities:
+
+- Handle domain-specific exceptions  
+- Return meaningful HTTP responses  
+- Prevent raw stack traces from reaching clients  
+
+Handled cases:
+
+- Invalid unit input  
+- Unsupported operations  
+- General system errors  
+
+---
+
+## OpenAPI (Swagger Integration)
+
+UC17 integrates **Swagger (OpenAPI)** for API documentation.
+
+Features:
+
+- Interactive API testing via browser  
+- Automatic endpoint documentation  
+- Request/response visualization  
+
+Access URLs:
+
+- Swagger UI: http://localhost:8080/swagger-ui.html  
+- OpenAPI JSON: http://localhost:8080/v3/api-docs  
+
+---
+
+## Example Flow
+
+Example operation:
+
+1 ft + 12 in
+
+Execution flow:
+
+Client (Swagger/Postman)  
+→ Controller (REST API)  
+→ Service Layer  
+→ Quantity Engine  
+→ Repository (JPA save)  
+→ Database  
+→ Response DTO  
+→ Client  
+
+Database Entry:
+
+operand1 = 1 FEET  
+operand2 = 12 INCH  
+operation = ADD  
+result = 2 FEET  
+
+Output:
+
+{
+  "result": 2,
+  "unit": "FEET",
+  "operation": "ADD",
+  "message": "Addition successful"
+}
+
+---
+
+## Conclusion
+
+UC17 transforms the **Quantity Measurement Application** into a **modern RESTful backend system** using **Spring Boot and Spring Data JPA**.
+
+This enhancement provides:
+
+- Scalable API-based architecture  
+- Persistent and structured data storage  
+- Interactive API documentation  
+- Clean separation of concerns  
+- Robust exception handling and validation  
+
+The application is now **enterprise-ready**, capable of integration with frontend applications, microservices, and external systems.
